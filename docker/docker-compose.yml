@@ -27,8 +27,7 @@ services:
     entrypoint: /home/air/entrypoint.sh
     command: >
       /bin/bash -c "
-        ros2 launch air_sim air_simulation.launch.py world_name:=${WORLD_NAME} gpu:=${GPU} rviz:=${RVIZ} &
-        if [ \"${WITH_VI}\" = \"true\" ]; then
+        if [ \"${INTERFACE}\" = \"true\" ]; then
           ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=peak sd_speed_source:=vehicle_can_speed &
         fi
         if [ \"${LIDAR}\" = \"true\" ]; then
