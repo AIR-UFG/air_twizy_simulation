@@ -1,6 +1,6 @@
 # air_twizy_simulation
 
-This repository contains the Central codebase for the AIR team's sd_twizy vehicle, encompassing both simulation models and real-world implementation using ROS2.
+This repository contains the central codebase for the AIR team's sd_twizy vehicle, encompassing both simulation models and real-world implementation using ROS2.
 
 <div align="center">
 
@@ -8,69 +8,106 @@ This repository contains the Central codebase for the AIR team's sd_twizy vehicl
 
 </div>
 
+## Repository Tree
+
+```
+air_twizy_simulation/
+│
+├── docker/
+│   ├── docker-compose.yml
+│   └── Dockerfile
+│
+├── ros_packages/
+│   ├── vehicle_interface_packages/
+│   │   ├── ros2_socketcan/
+│   │   ├── SD-VehicleInterface/
+│   │   ├── .gitmodules
+│   │   └── README.md
+│   │
+│   └── vehicle_simulation_packages/
+│       ├── air_description/
+│       ├── air_docs/
+│       ├── air_sim/
+│       └── vehicle_control_plugin/
+│
+├── utils/
+│   ├── bash_container.sh
+│   ├── build_docker.sh
+│   ├── record_bag.sh
+│   ├── run.sh
+│   └── verify_submodules.sh
+│
+├── .env
+├── .gitmodules
+└── README.md
+```
+
 ## Usage
 
 ### Prerequisites
 
 #### Install Docker
 
-Ensure that Docker is installed on your system. You can download it from the official Docker website. Docker compose is also required, and you can install it by following the instructions on the official Docker Compose website.
+Ensure that Docker is installed on your system. You can download it from the official Docker website. Docker Compose is also required, and you can install it by following the instructions on the official Docker Compose website.
 
 ### Installation
 
-#### Step 1: Clone the repository
-Clone the air_systemTwizy repository to your local machine using the following command:
+#### Step 1: Clone the Repository
+
+Clone the air_twizy_simulation repository to your local machine using the following command:
 
 ```bash
-git clone git@github.com:AIR-UFG/air_twizy_simulation.git --recursive
+git clone https://github.com/AIR-UFG/air_twizy_simulation.git
 ```
 
-#### Step 2: Build the Docker image
-Navigate to the cloned directory and build the Docker image with the provided Dockerfile:
+#### Step 2: Build the Docker Image
+
+Navigate to the cloned directory and build the Docker image using the provided build script:
 
 ```bash
 cd air_twizy_simulation
-docker build -t air-twizy-simulation -f docker/Dockerfile .
+./utils/build_docker.sh
 ```
+
 ### Running the Simulation
 
 #### Step 1: Start the Simulation
 
-To start the simulation using docker, run the following command setting the desired parameters:
+To start the simulation using Docker, run the following command setting the desired parameters:
 
 ```bash
-./run.sh RVIZ=true GPU=false PROJECTION=false
+./utils/run.sh GPU=false 
 ```
 
-The `run.sh` script allows you to set certain environment variables that control the behavior of the Docker container. You can set these variables by passing arguments to the script in the format KEY=value. The supported variables are:
+The `run.sh` script allows you to set certain environment variables that control the behavior of the Docker container. You can set these variables by passing arguments to the script in the format `KEY=value`. The supported variables are:
 
 - `GPU`: Allows the user to run the PointCloud Process Plugin with GPU usage. Default value is set to `false`
-- `RVIZ`: Open Ros Visualization Tool. Default value is set to `false`.
-- `PROJECTION`: Enables the projection pf the point cloud in 2D. Default value is set to `false`.
+- `RVIZ`: Open ROS Visualization Tool. Default value is set to `false`.
+- `PROJECTION`: Enables the projection of the point cloud in 2D. Default value is set to `false`.
 - `WORLD_NAME`: The name of the world file to be used in the simulation. Default value is set to `ufg_default.world`.
 - `FOV_UP`: Field of view up. Default: 15.0 degrees.
 - `FOV_DOWN`: Field of view down. Default: -15.0 degrees.
-- `WIDTH`: Width of the projection. Default: 440 pixels, due to gazebo limitations.
-- `HEIGHT`: Height of the projection. Default: 16 pixels, due the VLP-16 configuration.
+- `WIDTH`: Width of the projection. Default: 440 pixels, due to Gazebo limitations.
+- `HEIGHT`: Height of the projection. Default: 16 pixels, due to the VLP-16 configuration.
 - `WITH_VI`: Launch the vehicle interface. Default value is set to `false`.
 
-#### Step 2: Control the vehicle
+#### Step 2: Control the Vehicle
 
-Once the simulation has started, press play in the Gazebo window. 
+Once the simulation has started, press play in the Gazebo window.
 
-Open another terminal **outside the container** and **inside the air_systemTwizy directory**. Then execute:
+Open another terminal **outside the container** and **inside the air_twizy_simulation directory**. Then execute:
 
 ```bash
-./bash_container.sh
+./utils/bash_container.sh
 ```
 
-Then You can control the vehicle using the keyboard running:
+Then you can control the vehicle using the keyboard by running:
 
 ```bash
 ros2 run vehicle_control sd_teleop_keyboard_control.py
 ```
 
-Follow the instructions bellow to control the vehicle:
+Follow the instructions below to control the vehicle:
 
 <div align="center">
 
@@ -86,27 +123,30 @@ flowchart TB
 
 ### Recording and Playing a Bag File
 
-Once all the processes above are already up and running, open another terminal outside the container and navigate to the `air_systemTwizy` directory. Execute the following commands:
+Once all the processes above are already up and running, open another terminal outside the container and navigate to the `air_twizy_simulation` directory. Execute the following command to enter the container:
 
 ```bash
-./bash_container.sh
+./utils/bash_container.sh
 ```
-Go to the `host` directory that is mounted inside the container:
+
+Execute the command to record the bag with specific topics:
 
 ```bash
-cd ~/host
+./record_bag.sh <bag_prefix> <mode> [<topic>...]
 ```
 
-Execute the ros2 command to record the bag:
+If you want to record only the `/velodyne_points` topic, for example, you can use the following command:
 
 ```bash
-ros2 bag record -o <bag_name> /velodyne_points
+./utils/record_bag.sh <bag_prefix> specific /velodyne_points
 ```
 
-Control the vehicle through the city as you wish and then terminate the process with Ctrl+C. The bag will be stored in the `host` directory, which can be accessed both from within and outside the container.
+If you want to record all topics, use:
 
-NOTE: The command above will only record the `/velodyne_points` topic. If you want to record all topics, replace /velodyne_points with -a in the ros2 bag record command:
+```bash
+./utils/record_bag.sh <bag_prefix> all
+```
 
-```
-ros2 bag record -o <bag_name> -a
-```
+Once the bag is being recorded you may control the vehicle through the city as you wish and then terminate the process with `Ctrl+C`.
+
+The bag will be recorded inside the `shared_folder` directory that will be created in the `air_twizy_simulation` directory of the host machine when the container is started. This directory is shared between the host and the container. 
