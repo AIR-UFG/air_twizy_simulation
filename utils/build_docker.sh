@@ -17,7 +17,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Build the Docker image
-IMAGE_NAME="air-twizy-simulation" # Replace with your specific name
+IMAGE_NAME="air-twizy-car" # Replace with your specific name
 
 echo "Building Docker image with tag: $IMAGE_NAME"
 docker build -t $IMAGE_NAME -f ./docker/Dockerfile .
