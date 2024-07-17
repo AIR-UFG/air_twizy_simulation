@@ -5,13 +5,15 @@ export USERNAME=air
 # Allow local connections to the X server for GUI applications in Docker
 xhost +local:
 
-# Load .env variables
+# Define the root directory of the repository
+ROOT_DIR=$(dirname "$(dirname "$(realpath "$0")")")
+
+# Load .env variables from the root of the repository
 set -a  # automatically export all variables
-source .env
+source "$ROOT_DIR/.env"
 set +a
 
 # Update DISPLAY and XAUTHORITY to ensure GUI works, needed for X11 forwarding
-
 XAUTH=/tmp/.docker.xauth
 touch $XAUTH
 xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
@@ -20,12 +22,12 @@ export DISPLAY=:0
 export XAUTHORITY=$XAUTH
 
 # Create a volume to share files between the host and the container
-export SHARED_FOLDER=$(pwd)/shared_folder
+export SHARED_FOLDER="$ROOT_DIR/shared_folder"
 mkdir -p "$SHARED_FOLDER"
 
-# Create a volume to develop ROS packages in the host and share them with the container(ONLY FOR DEVELOPMENT)
-export HOST_FOLDER_PATH="$(pwd)/ros_packages" # Be sure to change this to the desired path
-export CONTAINER_FOLDER_PATH="/home/$USERNAME/ros2_ws/src/" # Be sure to change this to the desired path
+# Create a volume to develop ROS packages in the host and share them with the container (ONLY FOR DEVELOPMENT)
+export HOST_FOLDER_PATH="$ROOT_DIR/ros_packages" # Adjusted to match the root relative path
+export CONTAINER_FOLDER_PATH="/home/$USERNAME/ros2_ws/src/" # Ensure this matches the container's expected path
 
 # Check if any argument is provided
 if [ "$#" -gt 0 ]; then
@@ -65,5 +67,11 @@ else
   export NVIDIA_RUNTIME="runc"
 fi
 
-# Run Docker Compose
-docker-compose up --build
+# Ensure the Docker Compose file is found and run
+if [ -f "$ROOT_DIR/docker/docker-compose.yml" ]; then
+    echo "Running Docker Compose..."
+    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
+else
+    echo "Docker Compose file not found! Exiting..."
+    exit 1
+fi

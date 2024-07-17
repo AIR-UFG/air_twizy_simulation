@@ -29,15 +29,10 @@ services:
       - ${XAUTHORITY}:/tmp/.docker.xauth:rw
       - ${SHARED_FOLDER}:/home/${USERNAME}/shared_folder:rw
     runtime: "${NVIDIA_RUNTIME}"
-    # command: >
-    #   /bin/bash -c "
-    #     ros2 launch air_sim air_simulation.launch.py world_name:=${WORLD_NAME} gpu:=${GPU} rviz:=${RVIZ} projection:=${PROJECTION} &
-    #     if [ \"${WITH_VI}\" = \"true\" ]; then
-    #       ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=none sd_simulation_mode:=true &
-    #     fi &
-    #     if [ \"${PROJECTION}\" = \"true\" ]; then
-    #       ros2 launch lidar_spherical_projection lidar_spherical_projection.launch.py fov_up:=${FOV_UP} fov_down:=${FOV_DOWN} width:=${WIDTH} height:=${HEIGHT};
-    #     fi
-    #     tail -f /dev/null"
-
-
+    command: >
+      /bin/bash -c "
+        ros2 launch air_sim air_simulation.launch.py world_name:=${WORLD_NAME} gpu:=${GPU} rviz:=${RVIZ} &
+        if [ \"${WITH_VI}\" = \"true\" ]; then
+          ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=none sd_simulation_mode:=true &
+        fi
+        tail -f /dev/null"
