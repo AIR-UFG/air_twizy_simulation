@@ -29,6 +29,7 @@ services:
       - ${XAUTHORITY}:/tmp/.docker.xauth:rw
       - ${SHARED_FOLDER}:/home/${USERNAME}/shared_folder:rw
     runtime: "${NVIDIA_RUNTIME}"
+    entrypoint: /home/air/entrypoint.sh
     command: >
       /bin/bash -c "
         ros2 launch air_sim air_simulation.launch.py world_name:=${WORLD_NAME} gpu:=${GPU} rviz:=${RVIZ} &

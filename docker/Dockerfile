@@ -57,8 +57,15 @@ RUN mkdir -p /home/$USERNAME/.gazebo/models \
 RUN sudo cp /home/$USERNAME/ros2_ws/src/vehicle_simulation_packages/air_description/urdf/sensors/VLP-16.urdf.xacro /opt/ros/humble/share/velodyne_description/urdf/
 
 # Create the entrypoint script
-RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/$USERNAME/.bashrc \
-    && echo "source /home/$USERNAME/ros2_ws/install/setup.bash" >> /home/$USERNAME/.bashrc
+RUN echo "#!/bin/bash" > /home/$USERNAME/entrypoint.sh \
+    && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/$USERNAME/entrypoint.sh \
+    && echo "source /home/$USERNAME/ros2_ws/install/setup.bash" >> /home/$USERNAME/entrypoint.sh \
+    && echo "exec \"\$@\"" >> /home/$USERNAME/entrypoint.sh \
+    && sudo chmod +x /home/$USERNAME/entrypoint.sh \
+    && echo "source /home/air/entrypoint.sh" >> /home/$USERNAME/.bashrc
+
+# Set the entrypoint
+ENTRYPOINT ["/home/air/entrypoint.sh"]
 
 # Set the default command
 CMD ["/bin/bash"]
