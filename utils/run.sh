@@ -67,9 +67,23 @@ else
   export NVIDIA_RUNTIME="runc"
 fi
 
+# Function to stop and remove the Docker container
+cleanup() {
+    echo "Removing the Docker container..."
+    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" down
+    exit 0
+}
+
+# Trap SIGINT (Ctrl+C) and call the cleanup function
+trap cleanup SIGINT
+
 # Ensure the Docker Compose file is found and run
 if [ -f "$ROOT_DIR/docker/docker-compose.yml" ]; then
     echo "Running Docker Compose..."
+    
+    # Stop and remove the existing container if it exists
+    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" down
+    
     docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
 else
     echo "Docker Compose file not found! Exiting..."

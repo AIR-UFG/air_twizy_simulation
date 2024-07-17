@@ -25,6 +25,7 @@ services:
       - ${SHARED_FOLDER}:/home/${USERNAME}/shared_folder:rw
     runtime: "${NVIDIA_RUNTIME}"
     entrypoint: /home/air/entrypoint.sh
+    restart: "unless-stopped"
     command: >
       /bin/bash -c "
         if [ \"${INTERFACE}\" = \"true\" ]; then
