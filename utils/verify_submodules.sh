@@ -12,7 +12,7 @@ echo "Initializing and updating all submodules recursively..."
 git submodule update --init --recursive
 
 # Verify first-layer submodules
-if [ ! -d "ros_packages/vehicle_interface_packages" ] || [ ! -d "ros_packages/vehicle_simulation_packages" ]; then
+if [ ! -d "ros_packages/vehicle_interface_packages" ]; then
     echo "First-layer submodules are not correctly initialized. Please check the .gitmodules file."
     exit 1
 fi

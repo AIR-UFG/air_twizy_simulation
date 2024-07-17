@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   ros-node:
-    image: "air-twizy-simulation:latest"
+    image: "air-twizy-car:latest"
     container_name: air_container
     network_mode: host
     privileged: true
@@ -13,14 +13,9 @@ services:
       QT_X11_NO_MITSHM: "1"
       XAUTHORITY: "${XAUTHORITY}"
       GPU: "${GPU}"
-      WORLD_NAME: "${WORLD_NAME}"
-      RVIZ: "${RVIZ}"
-      PROJECTION: "${PROJECTION}"
-      FOV_UP: "${FOV_UP}"
-      FOV_DOWN: "${FOV_DOWN}"
-      WIDTH: "${WIDTH}"
-      HEIGHT: "${HEIGHT}"
-      WITH_VI: "${WITH_VI}"
+      LIDAR: "${LIDAR}"
+      INTERFACE: "${INTERFACE}"
+      CAN_PORT: "${CAN_PORT}"
       NVIDIA_RUNTIME: "${NVIDIA_RUNTIME}"
       USERNAME: "${USERNAME}"
     volumes:
@@ -34,6 +29,9 @@ services:
       /bin/bash -c "
         ros2 launch air_sim air_simulation.launch.py world_name:=${WORLD_NAME} gpu:=${GPU} rviz:=${RVIZ} &
         if [ \"${WITH_VI}\" = \"true\" ]; then
-          ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=none sd_simulation_mode:=true &
+          ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=peak sd_speed_source:=vehicle_can_speed &
+        fi
+        if [ \"${LIDAR}\" = \"true\" ]; then
+          ros2 launch velodyne velodyne-all-nodes-VLP16-launch.py
         fi
         tail -f /dev/null"
