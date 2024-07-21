@@ -1,0 +1,47 @@
+# To build it from the root directory:
+# docker build -t air_projection -f docker/Dockerfile.projection .
+
+FROM ros:humble-perception
+
+ARG ROS_DISTRO=humble
+ARG USERNAME=air_projection
+
+RUN apt update && apt install -y \
+    nano \
+    git \
+    python3-pip \
+    python3-rosdep \
+    ros-humble-cv-bridge \
+    ros-humble-tf-transformations \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install transforms3d
+
+RUN git clone https://github.com/AIR-UFG/colorcloud.git && \
+    cd colorcloud && \
+    pip install -e '.[dev]' && \
+    rm -rf /root/.cache/pip
+
+WORKDIR /home/air_projection
+
+RUN mkdir -p /home/air_projection/ros2_ws/src && \
+    cd /home/air_projection/ros2_ws/src && \
+    git clone https://github.com/AIR-UFG/lidar_spherical_projection.git && \
+    git clone https://github.com/Box-Robotics/ros2_numpy.git && \
+    cd .. && \
+    /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build --symlink-install"
+
+# Create the entrypoint script
+RUN echo "#!/bin/bash" > /home/air_projection/entrypoint.sh \
+    && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/air_projection/entrypoint.sh \
+    && echo "source /home/air_projection/ros2_ws/install/setup.bash" >> /home/air_projection/entrypoint.sh \
+    && echo "exec \"\$@\"" >> /home/air_projection/entrypoint.sh \
+    && sudo chmod +x /home/air_projection/entrypoint.sh \
+    && echo "source /home/air_projection/entrypoint.sh" >> /home/air_projection/.bashrc
+
+# Set the entrypoint
+ENTRYPOINT ["/home/air_projection/entrypoint.sh"]
+
+# Set the default command
+CMD ["/bin/bash"]
+

@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  ros-node:
+  air_simulation_container:
     image: "air-twizy-simulation:latest"
     container_name: air_container
     network_mode: host
@@ -15,16 +15,11 @@ services:
       GPU: "${GPU}"
       WORLD_NAME: "${WORLD_NAME}"
       RVIZ: "${RVIZ}"
-      PROJECTION: "${PROJECTION}"
-      FOV_UP: "${FOV_UP}"
-      FOV_DOWN: "${FOV_DOWN}"
-      WIDTH: "${WIDTH}"
-      HEIGHT: "${HEIGHT}"
       WITH_VI: "${WITH_VI}"
       NVIDIA_RUNTIME: "${NVIDIA_RUNTIME}"
       USERNAME: "${USERNAME}"
     volumes:
-      - ${HOST_FOLDER_PATH}:${CONTAINER_FOLDER_PATH}:rw #(ONLY FOR DEVELOPMENT)
+      # - ${HOST_FOLDER_PATH}:${CONTAINER_FOLDER_PATH}:rw #(ONLY FOR DEVELOPMENT)
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${XAUTHORITY}:/tmp/.docker.xauth:rw
       - ${SHARED_FOLDER}:/home/${USERNAME}/shared_folder:rw
@@ -36,4 +31,30 @@ services:
         if [ \"${WITH_VI}\" = \"true\" ]; then
           ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=none sd_simulation_mode:=true &
         fi
+        tail -f /dev/null"
+
+  air_projection_container:
+    image: air_projection:latest
+    container_name: air_projection_container
+    network_mode: host
+    privileged: true
+    tty: true
+    stdin_open: true
+    environment:
+      USERNAME: "air_projection"
+      FOV_UP: "${FOV_UP}"
+      FOV_DOWN: "${FOV_DOWN}"
+      WIDTH: "${WIDTH}"
+      HEIGHT: "${HEIGHT}"
+      PROJECTION: "${PROJECTION}"
+      NVIDIA_RUNTIME: "${NVIDIA_RUNTIME}"
+    runtime: "${NVIDIA_RUNTIME}"
+    depends_on:
+      - air_simulation_container
+    entrypoint: /home/air_projection/entrypoint.sh  
+    command: >
+      /bin/bash -c "
+        if [ \"${PROJECTION}\" = \"true\" ]; then
+          ros2 launch lidar_spherical_projection lidar_spherical_projection.launch.py width:=${WIDTH} height:=${HEIGHT} fov_up:=${FOV_UP} fov_down:=${FOV_DOWN} &
+        fi  
         tail -f /dev/null"
