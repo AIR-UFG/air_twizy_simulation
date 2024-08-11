@@ -1,5 +1,21 @@
-# Use the ROS Humble desktop full image as the base image
-FROM osrf/ros:humble-desktop-full
+# Use an NVIDIA CUDA image as the base image with ROS Humble
+FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+
+# Set non-interactive mode for tzdata configuration
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Sao_Paulo
+
+# Install ROS 2 Humble and Gazebo
+RUN apt-get update && apt-get install -y \
+    lsb-release \
+    gnupg2 \
+    curl \
+    && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - \
+    && sh -c 'echo "deb http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list' \
+    && apt-get update && apt-get install -y \
+    ros-humble-desktop-full \
+    ros-humble-gazebo-ros-pkgs \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set build arguments
 ARG USERNAME=air
@@ -22,10 +38,10 @@ RUN apt-get update && apt-get install -y \
     neovim \
     python3-pip \
     python3-rosdep \
+    python3-colcon-common-extensions \ 
     ros-humble-gazebo-ros \
     ros-humble-gazebo-dev \
     ros-humble-gazebo-plugins \
-    ros-humble-gazebo-ros-pkgs \
     ros-humble-joint-state-publisher \
     ros-humble-velodyne* \
     ros-humble-ackermann* \
@@ -47,7 +63,7 @@ COPY ./utils/ /home/$USERNAME/utils/
 RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/ros2_ws
 
 # Build the ROS2 workspace
-RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && cd /home/$USERNAME/ros2_ws && colcon build --symlink-install"
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && cd /home/$USERNAME/ros2_ws && colcon build --symlink-install"
 
 # Copy Gazebo models to the appropriate directory
 RUN mkdir -p /home/$USERNAME/.gazebo/models \
@@ -58,7 +74,7 @@ RUN sudo cp /home/$USERNAME/ros2_ws/src/vehicle_simulation_packages/air_descript
 
 # Create the entrypoint script
 RUN echo "#!/bin/bash" > /home/$USERNAME/entrypoint.sh \
-    && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/$USERNAME/entrypoint.sh \
+    && echo "source /opt/ros/humble/setup.bash" >> /home/$USERNAME/entrypoint.sh \
     && echo "source /home/$USERNAME/ros2_ws/install/setup.bash" >> /home/$USERNAME/entrypoint.sh \
     && echo "exec \"\$@\"" >> /home/$USERNAME/entrypoint.sh \
     && sudo chmod +x /home/$USERNAME/entrypoint.sh \
