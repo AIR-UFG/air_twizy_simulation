@@ -1,8 +1,8 @@
 [submodule "ros_packages/vehicle_simulation_packages"]
 	path = ros_packages/vehicle_simulation_packages
-	url = git@github.com:AIR-UFG/vehicle_simulation_packages.git
+	url = https://github.com/AIR-UFG/vehicle_simulation_packages.git
 	branch = development
 [submodule "ros_packages/vehicle_interface_packages"]
 	path = ros_packages/vehicle_interface_packages
-	url = git@github.com:AIR-UFG/vehicle_interface_packages.git
+	url = https://github.com/AIR-UFG/vehicle_interface_packages.git
 	branch = development
