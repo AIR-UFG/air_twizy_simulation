@@ -6,3 +6,10 @@
 	path = ros_packages/vehicle_interface_packages
 	url = https://github.com/AIR-UFG/vehicle_interface_packages.git
 	branch = development
+[submodule "ros_packages/ufgsim_pkg"]
+	path = ros_packages/ufgsim_pkg
+	url = https://github.com/AIR-UFG/ufgsim_pkg.git
+[submodule "ros_packages/ros2_numpy"]
+	path = ros_packages/ros2_numpy
+	url = https://github.com/Box-Robotics/ros2_numpy.git
+	branch = humble

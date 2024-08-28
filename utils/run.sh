@@ -70,7 +70,7 @@ fi
 # Ensure the Docker Compose file is found and run
 if [ -f "$ROOT_DIR/docker/docker-compose.yml" ]; then
     echo "Running Docker Compose..."
-    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
+    docker compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
 else
     echo "Docker Compose file not found! Exiting..."
     exit 1

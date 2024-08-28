@@ -30,13 +30,21 @@ RUN apt-get update && apt-get install -y \
     ros-humble-velodyne* \
     ros-humble-ackermann* \
     ros-humble-can-msgs \
+    ros-humble-tf-transformations \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install transforms3d
 
 # Switch to the non-root user
 USER $USERNAME
 
 # Set the working directory
 WORKDIR /home/$USERNAME
+
+RUN cd /home/$USERNAME/ && \
+    git clone -b UFGSim https://github.com/AIR-UFG/colorcloud.git && \
+    cd colorcloud && \
+    pip install -e '.[dev]'
 
 # Create the ROS2 workspace and copy the source files
 RUN mkdir -p /home/$USERNAME/ros2_ws/src
@@ -47,7 +55,7 @@ COPY ./utils/ /home/$USERNAME/utils/
 RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/ros2_ws
 
 # Build the ROS2 workspace
-RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && cd /home/$USERNAME/ros2_ws && colcon build --symlink-install"
+RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build --symlink-install"
 
 # Copy Gazebo models to the appropriate directory
 RUN mkdir -p /home/$USERNAME/.gazebo/models \
