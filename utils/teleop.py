@@ -63,6 +63,8 @@ CTRL-C to quit
                     self.current_velocity += self.velocity_increase_rate
                 elif key == 's':
                     self.current_velocity -= self.velocity_increase_rate
+                    if self.current_velocity < 0.0:
+                        self.current_velocity = 0.0
                 elif key == 'a':
                     self.current_steering_angle += self.steering_increase_rate
                 elif key == 'd':

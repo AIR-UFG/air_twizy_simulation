@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export USERNAME=air
-
 # Allow local connections to the X server for GUI applications in Docker
 xhost +local:
 
@@ -27,7 +25,7 @@ mkdir -p "$SHARED_FOLDER"
 
 # Create a volume to develop ROS packages in the host and share them with the container (ONLY FOR DEVELOPMENT)
 export HOST_FOLDER_PATH="$ROOT_DIR/ros_packages" # Adjusted to match the root relative path
-export CONTAINER_FOLDER_PATH="/home/$USERNAME/ros2_ws/src/" # Ensure this matches the container's expected path
+export CONTAINER_FOLDER_PATH="/root/ros2_ws/src/" # Ensure this matches the container's expected path
 
 # Check if any argument is provided
 if [ "$#" -gt 0 ]; then
