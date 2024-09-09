@@ -35,12 +35,10 @@ services:
             - capabilities: [gpu]
     runtime: ${NVIDIA_RUNTIME}
     entrypoint: /home/air/entrypoint.sh
-    command: /bin/bash
-
-    # command: >
-    #   /bin/bash -c "
-    #     ros2 launch air_sim air_simulation.launch.py world_name:=${WORLD_NAME} gpu:=${GPU} rviz:=${RVIZ} &
-    #     if [ \"${WITH_VI}\" = \"true\" ]; then
-    #       ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=none sd_simulation_mode:=true &
-    #     fi
-    #     tail -f /dev/null"
+    command: >
+      /bin/bash -c "
+        ros2 launch air_sim air_simulation.launch.py world_name:=${WORLD_NAME} gpu:=${GPU} rviz:=${RVIZ} &
+        if [ \"${WITH_VI}\" = \"true\" ]; then
+          ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=none sd_simulation_mode:=true &
+        fi
+        tail -f /dev/null"
