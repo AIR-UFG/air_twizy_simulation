@@ -55,7 +55,8 @@ COPY ./utils/ /home/$USERNAME/utils/
 RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/ros2_ws
 
 # Build the ROS2 workspace
-RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build --symlink-install"
+RUN cd /home/$USERNAME/ros2_ws && \
+    /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build --symlink-install"
 
 # Copy Gazebo models to the appropriate directory
 RUN mkdir -p /home/$USERNAME/.gazebo/models \
