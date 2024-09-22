@@ -4,7 +4,7 @@ This repository contains the central codebase for the AIR team's sd_twizy vehicl
 
 <div align="center">
 
-![Twizy in the gazebo city](./ros_packages/vehicle_simulation_packages/air_docs/twizy.gif)
+![Twizy in the gazebo city](https://github.com/AIR-UFG/vehicle_simulation_packages/raw/development/air_docs/twizy.gif)
 
 </div>
 
@@ -89,11 +89,12 @@ The `run.sh` script allows you to set certain environment variables that control
 - `WIDTH`: Width of the projection. Default: 440 pixels, due to Gazebo limitations.
 - `HEIGHT`: Height of the projection. Default: 16 pixels, due to the VLP-16 configuration.
 - `WITH_VI`: Launch the vehicle interface. Default value is set to `false`.
-- `ROBOT_POSE`: Set the initial pose of the robot. It is a 6D pose in the format `x, y, z, roll, pitch, yaw`. Default value is set to `6.0, -1.0, 0.3, 0.0, 0.0, 0.0`. It must be passed as a string and the city`s map is shown below.
+- `ROBOT_POSE`: Set the initial pose of the robot. It is a 6D pose in the format `x, y, z, roll, pitch, yaw`. Default value is set to `6.0, -1.0, 0.3, 0.0, 0.0, 0.0`. It must be passed as a string and the city`s map is shown [here](https://github.com/AIR-UFG/vehicle_simulation_packages/raw/development/air_docs/imgs/xy_city.png).
+
 
 <div align="center">
 
-![City Map](./ros_packages/vehicle_simulation_packages/air_docs/imgs/xy_city.png)
+![City's map](https://github.com/AIR-UFG/vehicle_simulation_packages/raw/development/air_docs/imgs/xy_city.png)
 
 </div>
 
