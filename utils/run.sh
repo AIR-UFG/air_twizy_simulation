@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export USERNAME=air
-
 # Allow local connections to the X server for GUI applications in Docker
 xhost +local:
 
@@ -18,7 +16,7 @@ XAUTH=/tmp/.docker.xauth
 touch $XAUTH
 xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 
-export DISPLAY=:0
+export DISPLAY=$DISPLAY
 export XAUTHORITY=$XAUTH
 
 # Create a volume to share files between the host and the container
@@ -27,7 +25,7 @@ mkdir -p "$SHARED_FOLDER"
 
 # Create a volume to develop ROS packages in the host and share them with the container (ONLY FOR DEVELOPMENT)
 export HOST_FOLDER_PATH="$ROOT_DIR/ros_packages" # Adjusted to match the root relative path
-export CONTAINER_FOLDER_PATH="/home/$USERNAME/ros2_ws/src/" # Ensure this matches the container's expected path
+export CONTAINER_FOLDER_PATH="/root/ros2_ws/src/" # Ensure this matches the container's expected path
 
 # Check if any argument is provided
 if [ "$#" -gt 0 ]; then
@@ -39,7 +37,7 @@ if [ "$#" -gt 0 ]; then
         
         # Validate the key and update the environment variable
         case "$key" in
-            GPU|WORLD_NAME|RVIZ|PROJECTION|FOV_UP|FOV_DOWN|WIDTH|HEIGHT|WITH_VI)
+            GPU|WORLD_NAME|RVIZ|FOV_UP|FOV_DOWN|WIDTH|HEIGHT|ROBOT_POSE|WITH_VI)
                 echo "Setting $key to $value"
                 export "$key"="$value"
                 ;;
@@ -67,10 +65,17 @@ else
   export NVIDIA_RUNTIME="runc"
 fi
 
+# Function to clean up Docker containers when script is interrupted
+cleanup() {
+    echo "Shutting down Docker Compose and removing containers..."
+    docker compose -f "$ROOT_DIR/docker/docker-compose.yml" down --remove-orphans
+}
+trap cleanup EXIT
+
 # Ensure the Docker Compose file is found and run
 if [ -f "$ROOT_DIR/docker/docker-compose.yml" ]; then
     echo "Running Docker Compose..."
-    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
+    docker compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
 else
     echo "Docker Compose file not found! Exiting..."
     exit 1

@@ -4,7 +4,7 @@ This repository contains the central codebase for the AIR team's sd_twizy vehicl
 
 <div align="center">
 
-![Twizy in the gazebo city](./vehicle_simulation/air_docs/twizy.gif)
+![Twizy in the gazebo city](./ros_packages/vehicle_simulation_packages/air_docs/twizy.gif)
 
 </div>
 
@@ -76,20 +76,26 @@ cd air_twizy_simulation
 To start the simulation using Docker, run the following command setting the desired parameters:
 
 ```bash
-./utils/run.sh GPU=false 
+./utils/run.sh ROBOT_POSE="6.0,-1.0,0.3,0.0,0.0,0.0" GPU=false RVIZ=false
 ```
 
 The `run.sh` script allows you to set certain environment variables that control the behavior of the Docker container. You can set these variables by passing arguments to the script in the format `KEY=value`. The supported variables are:
 
 - `GPU`: Allows the user to run the PointCloud Process Plugin with GPU usage. Default value is set to `false`
 - `RVIZ`: Open ROS Visualization Tool. Default value is set to `false`.
-- `PROJECTION`: Enables the projection of the point cloud in 2D. Default value is set to `false`.
 - `WORLD_NAME`: The name of the world file to be used in the simulation. Default value is set to `ufg_default.world`.
 - `FOV_UP`: Field of view up. Default: 15.0 degrees.
 - `FOV_DOWN`: Field of view down. Default: -15.0 degrees.
 - `WIDTH`: Width of the projection. Default: 440 pixels, due to Gazebo limitations.
 - `HEIGHT`: Height of the projection. Default: 16 pixels, due to the VLP-16 configuration.
 - `WITH_VI`: Launch the vehicle interface. Default value is set to `false`.
+- `ROBOT_POSE`: Set the initial pose of the robot. It is a 6D pose in the format `x, y, z, roll, pitch, yaw`. Default value is set to `6.0, -1.0, 0.3, 0.0, 0.0, 0.0`. It must be passed as a string and the city`s map is shown below.
+
+<div align="center">
+
+![City Map](./ros_packages/vehicle_simulation_packages/air_docs/imgs/xy_city.png)
+
+</div>
 
 #### Step 2: Control the Vehicle
 
@@ -132,13 +138,15 @@ Once all the processes above are already up and running, open another terminal o
 Execute the command to record the bag with specific topics:
 
 ```bash
-./record_bag.sh <bag_prefix> <mode> [<topic>...]
+./utils/record_bag.sh <bag_prefix> <mode> [<topic>...]
 ```
+
+Where `<bag_prefix>` is the prefix name of the bag file, `<mode>` is the mode of recording (`specific` or `all`), and `<topic>` is the topic to be recorded. Note that when on specific mode, you can pass multiple topics to be recorded, such as `/topic_1 /topic_2 ...`.
 
 If you want to record only the `/velodyne_points` topic, for example, you can use the following command:
 
 ```bash
-./utils/record_bag.sh <bag_prefix> specific /velodyne_points
+./utils/record_bag.sh ros2_bag specific /velodyne_points
 ```
 
 If you want to record all topics, use:
