@@ -5,6 +5,8 @@ services:
     image: "air-twizy-simulation:latest"
     container_name: air_container
     network_mode: host
+    ipc: host
+    pid: host
     privileged: true
     tty: true
     user: root
