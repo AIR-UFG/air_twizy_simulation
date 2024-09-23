@@ -65,9 +65,6 @@ else
   export NVIDIA_RUNTIME="runc"
 fi
 
-export UID=$(id -u)
-export GID=$(id -g)
-
 # Function to clean up Docker containers when script is interrupted
 cleanup() {
     echo "Shutting down Docker Compose and removing containers..."
