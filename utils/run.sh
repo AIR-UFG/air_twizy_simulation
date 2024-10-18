@@ -37,7 +37,7 @@ if [ "$#" -gt 0 ]; then
         
         # Validate the key and update the environment variable
         case "$key" in
-            GPU|INTERFACE|LIDAR|CAN_PORT)
+            GPU|INTERFACE|LIDAR|CAN_PORT|RVIZ)
                 echo "Setting $key to $value"
                 export "$key"="$value"
                 ;;
@@ -68,7 +68,7 @@ fi
 # Function to stop and remove the Docker container
 cleanup() {
     echo "Removing the Docker container..."
-    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" down
+    docker compose -f "$ROOT_DIR/docker/docker-compose.yml" down
     exit 0
 }
 
@@ -80,9 +80,9 @@ if [ -f "$ROOT_DIR/docker/docker-compose.yml" ]; then
     echo "Running Docker Compose..."
     
     # Stop and remove the existing container if it exists
-    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" down
+    docker compose -f "$ROOT_DIR/docker/docker-compose.yml" down
     
-    docker-compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
+    docker compose -f "$ROOT_DIR/docker/docker-compose.yml" up --build
 else
     echo "Docker Compose file not found! Exiting..."
     exit 1

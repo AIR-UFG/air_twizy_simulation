@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   ros-node:
-    image: "air-twizy-car:latest"
-    container_name: air_container
+    image: "air-twizy-car-image:v1"
+    container_name: air_car_container
     network_mode: host
     privileged: true
     tty: true
@@ -31,6 +31,6 @@ services:
           ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=peak sd_speed_source:=vehicle_can_speed &
         fi
         if [ \"${LIDAR}\" = \"true\" ]; then
-          ros2 launch velodyne velodyne-all-nodes-VLP16-launch.py
+          ros2 launch air_sim air_simulation.launch.py rviz:=${RVIZ} &
         fi
         tail -f /dev/null"

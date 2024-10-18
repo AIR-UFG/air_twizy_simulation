@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y \
     ros-humble-ackermann* \
     ros-humble-can-msgs \
     ros-humble-teleop-twist-keyboard \
+    ros-humble-plotjuggler \
+    ros-humble-rqt* \
+    ros-humble-rtabmap* \
     can-utils \
     iproute2 \
     && rm -rf /var/lib/apt/lists/*
