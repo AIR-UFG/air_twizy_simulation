@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the directory to save bag files
-SHARED_FOLDER="/home/$USERNAME/shared_folder"
+SHARED_FOLDER="/home/shared_folder"
 
 # Create the shared folder if it doesn't exist
 mkdir -p "$SHARED_FOLDER"
