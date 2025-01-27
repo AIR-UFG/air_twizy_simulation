@@ -21,6 +21,7 @@ export XAUTHORITY=$XAUTH
 
 # Create a volume to share files between the host and the container
 export SHARED_FOLDER="$ROOT_DIR/shared_folder"
+export UTILS_PATH="$ROOT_DIR/utils"
 mkdir -p "$SHARED_FOLDER"
 
 # Create a volume to develop ROS packages in the host and share them with the container (ONLY FOR DEVELOPMENT)

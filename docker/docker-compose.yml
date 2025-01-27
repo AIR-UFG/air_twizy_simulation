@@ -22,15 +22,10 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${XAUTHORITY}:/tmp/.docker.xauth:rw
       - ${SHARED_FOLDER}:/root/shared_folder:rw
+      - ${UTILS_PATH}:/root/utils:rw
     runtime: "${NVIDIA_RUNTIME}"
     entrypoint: /root/entrypoint.sh
     restart: "unless-stopped"
     command: >
-      /bin/bash -c "
-        if [ \"${INTERFACE}\" = \"true\" ]; then
-          ros2 launch sd_vehicle_interface sd_vehicle_interface.launch.xml sd_vehicle:=twizy sd_gps_imu:=peak sd_speed_source:=vehicle_can_speed &
-        fi
-        if [ \"${LIDAR}\" = \"true\" ]; then
-          ros2 launch air_sim air_simulation.launch.py rviz:=${RVIZ} &
-        fi
-        tail -f /dev/null"
+      bash 
+        
